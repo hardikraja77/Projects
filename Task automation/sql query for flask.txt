@@ -1,0 +1,13 @@
+CREATE TABLE Employees (
+    EmployeeId INT PRIMARY KEY IDENTITY(1,1),
+    EmployeeName NVARCHAR(100) NOT NULL,
+    EmployeeDepartmentId INT NOT NULL
+);
+
+CREATE TABLE Tasks (
+    TaskId INT PRIMARY KEY IDENTITY(1,1),
+    TaskName NVARCHAR(100) NOT NULL,
+    AssignedTo INT NOT NULL,
+    Deadline DATE NOT NULL,
+    FOREIGN KEY (AssignedTo) REFERENCES Employees(EmployeeId)
+);

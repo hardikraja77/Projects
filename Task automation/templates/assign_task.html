@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assign Task</title>
+    <link rel="stylesheet" href="static/styles9.css">
+</head>
+<body>
+    <div class="form-container">
+        <h2>Assign Task</h2>
+        <form id="assignTaskForm" action="/submit_task" method="POST">
+            <div class="form-group">
+                <label for="taskName">Task Name:</label>
+                <input type="text" id="taskName" name="taskName" placeholder="Enter task name" required>
+            </div>
+            <div class="form-group">
+                <label for="assignTo">Assign To (Employee ID):</label>
+                <input type="text" id="assignTo" name="assignTo" placeholder="Enter employee ID" required>
+            </div>
+            <div class="form-group">
+                <label for="departmentId">Department ID:</label>
+                <input type="text" id="departmentId" name="departmentId" placeholder="Enter department ID" required>
+            </div>
+            <div class="form-group">
+                <label for="deadlineDate">Deadline:</label>
+                <input type="date" id="deadlineDate" name="deadlineDate" required>
+            </div>
+            <div class="form-group">
+                <button type="submit">Assign Task</button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

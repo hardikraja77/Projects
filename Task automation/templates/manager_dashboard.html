@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manager Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles6.css') }}">
+</head>
+<body>
+    <div class="dashboard-container">
+        <h2>Welcome, Manager</h2>
+        <ul>
+            <li><a href="{{ url_for('assign_task1') }}">Assign Task</a></li>
+            <li><a href="{{ url_for('manage_attendance') }}">Attendance</a></li>
+            <li><a href="#">Project Status</a></li>
+	    <li><a href="{{ url_for('add_employee1') }}">Add Employee</a></li>
+	    <li><a href="{{ url_for('get_employee1') }}">Get Employee details</a></li>
+
+        </ul>
+    </div>
+</body>
+</html>

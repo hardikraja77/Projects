@@ -1,0 +1,19 @@
++<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Dashboard</title>
+    <link rel="stylesheet" href="static/styles.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <h2>Welcome Employee</h2>
+        <ul>
+            <li><a href="{{url_for ('emp_attendance') }}">attendance</a></li>
+            <li><a href="{{url_for('emp_task')}}">Task</a></li>
+            <li><a href="#">Project Status</a></li>
+        </ul>
+    </div>
+</body>
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="static/styles3.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <h2>Welcome Admin</h2>
+        <div class="attendance-form">
+            <h3>Record Attendance</h3>
+            <form id="attendanceForm" method="POST" action="/attendance">
+                <div class="form-group">
+                    <label for="employeeId">Employee ID:</label>
+                    <input type="text" id="employeeId" name="employeeId" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="departmentId">Department ID:</label>
+                    <input type="text" id="departmentId" name="departmentId" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="date">Date:</label>
+                    <input type="date" id="date" name="date" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Status:</label><br>
+                    <div class="form-check">
+                        <input type="radio" id="present" name="status" value="Present" required>
+                        <label for="present">Present</label>
+                    </div>
+                    <div class="form-check">
+                        <input type="radio" id="absent" name="status" value="Absent" required>
+                        <label for="absent">Absent</label>
+                    </div>
+                </div>
+
+                <button type="submit">Submit</button>
+            </form>
+        </div>
+    </div>
+    <script src="static/scripts3.js"></script>
+</body>
+</html>

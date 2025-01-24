@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Get Employee Details</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="dashboard-container">
+        <h2>Get Employee Details</h2>
+        
+        {% if error %}
+            <div class="error-message">{{ error }}</div>
+        {% endif %}
+        
+        <form action="/fetch_employee" method="post">
+            <label for="employeeId">Employee ID:</label>
+            <input type="text" id="employeeId" name="employeeId" required>
+            <button type="submit">Get Details</button>
+        </form>
+
+        <form action="/fetch_all_employees" method="get">
+            <button type="submit">Show All</button>
+        </form>
+        
+        {% if employee %}
+            <div class="employee-details">
+                <h3>Employee Details</h3>
+                <p><strong>Employee ID:</strong> {{ employee.EmployeeID }}</p>
+                <p><strong>Name:</strong> {{ employee.EmployeeName }}</p>
+                <p><strong>Department ID:</strong> {{ employee.EmployeeDepartmentId }}</p>
+            </div>
+        {% endif %}
+        
+        {% if all_employees %}
+            <h3>All Employees</h3>
+            <table border="1">
+                <tr>
+                    <th>Employee ID</th>
+                    <th>Name</th>
+                    <th>Department ID</th>
+                </tr>
+                {% for emp in all_employees %}
+                <tr>
+                    <td>{{ emp.EmployeeID }}</td>
+                    <td>{{ emp.EmployeeName }}</td>
+                    <td>{{ emp.EmployeeDepartmentId }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        {% endif %}
+    </div>
+</body>
+</html>

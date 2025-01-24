@@ -1,0 +1,10 @@
+document.getElementById('projectStatusForm').addEventListener('submit', function(event) {
+    const projectId = document.getElementById('projectId').value.trim();
+    const projectName = document.getElementById('projectName').value.trim();
+    const status = document.getElementById('status').value.trim();
+
+    if (!projectId || !projectName || !status) {
+        alert('Please fill in all required fields.');
+        event.preventDefault();
+    }
+});

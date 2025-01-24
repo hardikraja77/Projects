@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="dashboard-container">
+        <h2>Welcome Admin</h2>
+        <ul>
+            <li><a href="/add_employee">Add Employee</a></li>
+            <li><a href="/signup">Create Employee ID</a></li>
+            <li><a href="/assign_task">Assign Task</a></li>
+            <li><a href="/attendance">Attendance</a></li>
+            <li><a href="/project_status">Project Status</a></li>
+            <li><a href="/get_employee">Get Employee Details</a></li>
+	    <li><a href="/delete_employee">Delete Employee Details</a></li>
+        </ul>
+    </div>
+</body>
+</html>
