@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Customer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='customer_styles.css') }}">
+</head>
+<body>
+     <h2>Add Customer Details</h2>
+    <form id="customerForm" action="/add_customer" method="POST" enctype="multipart/form-data">
+        <label for="taskId">Task ID:</label><br>
+        <input type="text" id="taskId" name="taskId" required><br><br>
+
+        <label for="email">Email:</label><br>
+        <input type="email" id="email" name="email" required><br><br>
+
+        <label for="requirements">Requirements:</label><br>
+        <textarea id="requirements" name="requirements" required></textarea><br><br>
+
+        <label for="photos">Upload Photos:</label><br>
+        <input type="file" id="photos" name="photos" accept="image/*" multiple><br><br>
+
+        <input type="submit" value="Submit">
+    </form>
+
+    <script>
+        document.getElementById('customerForm').onsubmit = function(event) {
+            event.preventDefault();
+
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    function(position) {
+                        const latitude = position.coords.latitude;
+                        const longitude = position.coords.longitude;
+
+                        const formData = new FormData(document.getElementById('customerForm'));
+                        formData.append('latitude', latitude);
+                        formData.append('longitude', longitude);
+
+                        fetch('/add_customer', {
+                            method: 'POST',
+                            body: formData
+                        })
+                        .then(response => response.text())
+                        .then(data => {
+                            alert(data); // Show response text
+                            window.location.href = '/sales_dashboard'; // Redirect after success
+                        })
+                        .catch(error => console.error('Error:', error));
+                    },
+                    function(error) {
+                        alert('Geolocation error: ' + error.message);
+                    }
+                );
+            } else {
+                alert('Geolocation is not supported by this browser.');
+            }
+        }
+    </script>
+</body>
+</html>

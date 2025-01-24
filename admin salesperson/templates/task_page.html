@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Next Customer</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        h2 {
+            color: #4a4a4a;
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 12px 25px;
+            font-size: 18px;
+            color: #fff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #status {
+            padding: 12px;
+            background-color: #e0e0e0;
+            border-radius: 5px;
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+            font-size: 15px;
+            color: #333;
+            margin-top: 20px;
+        }
+
+        table {
+            width: 100%;
+            max-width: 900px;
+            margin-top: 20px;
+            border-collapse: collapse;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #007bff;
+            color: #fff;
+            text-align: center;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .map-btn {
+            color: #007bff;
+            cursor: pointer;
+            text-decoration: underline;
+            background: none;
+            border: none;
+        }
+
+        .map-btn:hover {
+            color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h2>Next Customer</h2>
+    <button id="getLocation">Get Details</button>
+    <p id="status"></p>
+
+    <table id="customerTable" style="display: none;">
+        <thead>
+            <tr>
+                <th>Task ID</th>
+                <th>Customer Name</th>
+                <th>Phone Number</th>
+                <th>Latitude</th>
+                <th>Longitude</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody id="taskBody">
+            <!-- Content will be dynamically inserted here -->
+        </tbody>
+    </table>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
+    <script>
+        let map, routingControl;
+
+        function initMap(lat, lon) {
+            if (map) {
+                map.remove();
+            }
+
+            map = L.map('map').setView([lat, lon], 13);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+            }).addTo(map);
+
+            if (routingControl) {
+                routingControl.remove();
+            }
+
+            routingControl = L.Routing.control({
+                waypoints: [
+                    L.latLng(lat, lon)
+                ],
+                routeWhileDragging: true,
+                geocoder: L.Control.Geocoder.nominatim()
+            }).addTo(map);
+
+            document.getElementById('map').style.display = 'block';
+        }
+
+        document.getElementById('getLocation').addEventListener('click', function() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(success, error);
+            } else {
+                document.getElementById('status').textContent = "Geolocation is not supported by this browser.";
+            }
+
+            function success(position) {
+                const latitude = position.coords.latitude;
+                const longitude = position.coords.longitude;
+
+                document.getElementById('status').textContent = "Fetching customer tasks...";
+
+                fetch('/next_customer', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        latitude: latitude,
+                        longitude: longitude
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message) {
+                        document.getElementById('status').textContent = data.message;
+                    } else {
+                        document.getElementById('customerTable').style.display = 'table';
+                        const taskBody = document.getElementById('taskBody');
+                        taskBody.innerHTML = '';  // Clear existing rows
+
+                        data.forEach(task => {
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                                <td>${task.task_id}</td>
+                                <td>${task.customer_name}</td>
+                                <td>${task.phone_number}</td>
+                                <td>${task.latitude}</td>
+                                <td>${task.longitude}</td>
+                                <td><button class="map-btn" onclick="showRoute(${task.latitude}, ${task.longitude})">Map</button></td>
+                            `;
+                            taskBody.appendChild(row);
+                        });
+                    }
+                })
+                .catch((error) => console.error('Error:', error));
+            }
+
+            function error() {
+                document.getElementById('status').textContent = "Unable to retrieve your location.";
+            }
+        });
+
+        function showRoute(lat, lon) {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    const userLat = position.coords.latitude;
+                    const userLon = position.coords.longitude;
+
+                    window.location.href = `/map_view?task_id=1234&latitude=${lat}&longitude=${lon}`;
+                });
+            } else {
+                alert("Geolocation is not supported by this browser.");
+            }
+        }
+    </script>
+</body>
+</html>

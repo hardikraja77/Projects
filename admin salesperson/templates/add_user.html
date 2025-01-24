@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add New User</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="form-container">
+        <h2>Add New User</h2>
+        <form action="/add_user" method="POST">
+            <label for="username">Username:</label><br>
+            <input type="text" id="username" name="username" required><br><br>
+            <label for="password">Password:</label><br>
+            <input type="password" id="password" name="password" required><br><br>
+            <label for="access_type">Access Type:</label><br>
+            <select id="access_type" name="access_type" required>
+                <option value="Admin">Admin</option>
+                <option value="Sales">Sales</option>
+                <option value="Employee">Employee</option>
+            </select><br><br>
+            <input type="submit" value="Add User">
+        </form>
+    </div>
+</body>
+</html>

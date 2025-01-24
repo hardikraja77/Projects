@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Customer</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        h2 {
+            color: #333;
+        }
+        form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+        input[type="text"] {
+            width: calc(100% - 20px);
+            padding: 8px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        #map {
+            height: 300px;
+            width: 100%;
+            margin-bottom: 15px;
+        }
+        input[type="submit"] {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h2>Add Customer</h2>
+    <form method="POST" action="{{ url_for('customer_form') }}">
+        <label for="customerName">Name:</label>
+        <input type="text" id="customerName" name="customerName" required>
+
+        <label for="phoneNumber">Phone Number:</label>
+        <input type="text" id="phoneNumber" name="phoneNumber" required>
+
+        <label for="location">Location:</label>
+        <div id="map"></div>
+        <input type="text" id="latitude" name="latitude" placeholder="Latitude" readonly>
+        <input type="text" id="longitude" name="longitude" placeholder="Longitude" readonly>
+
+        <button type="button" onclick="getLocation()">Use Current Location</button><br><br>
+
+        <input type="submit" value="Add Customer">
+    </form>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+    <script>
+        var map = L.map('map').setView([51.505, -0.09], 13);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+        }).addTo(map);
+
+        var marker;
+
+        // Add the search control
+        var geocoder = L.Control.geocoder({
+            defaultMarkGeocode: false
+        }).on('markgeocode', function(e) {
+            var latlng = e.geocode.center;
+
+            if (marker) {
+                map.removeLayer(marker);
+            }
+
+            map.setView(latlng, 13);
+            marker = L.marker(latlng, {
+                draggable: true
+            }).addTo(map);
+
+            document.getElementById('latitude').value = latlng.lat;
+            document.getElementById('longitude').value = latlng.lng;
+
+            marker.on('dragend', function() {
+                var position = marker.getLatLng();
+                document.getElementById('latitude').value = position.lat;
+                document.getElementById('longitude').value = position.lng;
+            });
+        }).addTo(map);
+
+        map.on('click', function(e) {
+            var lat = e.latlng.lat;
+            var lng = e.latlng.lng;
+
+            if (marker) {
+                map.removeLayer(marker);
+            }
+
+            marker = L.marker([lat, lng], {
+                draggable: true
+            }).addTo(map);
+
+            document.getElementById('latitude').value = lat;
+            document.getElementById('longitude').value = lng;
+
+            marker.on('dragend', function() {
+                var position = marker.getLatLng();
+                document.getElementById('latitude').value = position.lat;
+                document.getElementById('longitude').value = position.lng;
+            });
+        });
+
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    var lat = position.coords.latitude;
+                    var lng = position.coords.longitude;
+                    map.setView([lat, lng], 13);
+                    if (marker) {
+                        map.removeLayer(marker);
+                    }
+                    marker = L.marker([lat, lng], {
+                        draggable: true
+                    }).addTo(map);
+                    document.getElementById('latitude').value = lat;
+                    document.getElementById('longitude').value = lng;
+
+                    marker.on('dragend', function() {
+                        var position = marker.getLatLng();
+                        document.getElementById('latitude').value = position.lat;
+                        document.getElementById('longitude').value = position.lng;
+                    });
+                });
+            } else {
+                alert("Geolocation is not supported by this browser.");
+            }
+        }
+    </script>
+</body>
+</html>

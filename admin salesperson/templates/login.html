@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    <style>
+        /* General reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Background styling */
+        body {
+            background-image: url('https://img.freepik.com/free-vector/geometric-gradient-futuristic-background_23-2149116406.jpg'); /* Replace with your image path */
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            height: 100vh;
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Login container */
+        .login-container {
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        /* Heading */
+        h2 {
+            margin-bottom: 20px;
+            color: #333;
+            font-size: 24px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        /* Input fields */
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        /* Submit button */
+        input[type="submit"] {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            width: 100%;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+
+        /* Customer form link */
+        .new-customer-link {
+            margin-top: 15px;
+        }
+
+        .new-customer-link a {
+            color: #007BFF;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .new-customer-link a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive styling */
+        @media (max-width: 768px) {
+            .login-container {
+                width: 95%;
+            }
+
+            h2 {
+                font-size: 20px;
+            }
+
+            input[type="text"],
+            input[type="password"],
+            input[type="submit"] {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h2>Login</h2>
+        <form id="loginForm" action="/login" method="POST">
+            <label for="username">Username:</label><br>
+            <input type="text" id="username" name="username" required><br><br>
+            <label for="password">Password:</label><br>
+            <input type="password" id="password" name="password" required><br><br>
+            <input type="submit" value="Login">
+        </form>
+
+        <!-- Link to open the customer form -->
+        <div class="new-customer-link">
+            <a href="{{ url_for('customer_form') }}">Customer? Click here to add your details</a>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').onsubmit = function(event) {
+            event.preventDefault();
+
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    function(position) {
+                        const latitude = position.coords.latitude;
+                        const longitude = position.coords.longitude;
+
+                        const formData = new FormData();
+                        formData.append('username', document.getElementById('username').value);
+                        formData.append('password', document.getElementById('password').value);
+                        formData.append('latitude', latitude);
+                        formData.append('longitude', longitude);
+
+                        fetch('/login', {
+                            method: 'POST',
+                            body: formData
+                        })
+                        .then(response => response.text())
+                        .then(data => {
+                            if (data.includes('Admin Dashboard') || data.includes('Sales Dashboard') || data.includes('Employee Dashboard')) {
+                                window.location.href = data.includes('Admin Dashboard') ? '/admin_dashboard' : 
+                                                       data.includes('Sales Dashboard') ? '/sales_dashboard' : 
+                                                       '/employee_dashboard';
+                            } else {
+                                alert('Login failed!');
+                            }
+                        })
+                        .catch(error => console.error('Error:', error));
+                    },
+                    function(error) {
+                        alert('Geolocation error: ' + error.message);
+                    }
+                );
+            } else {
+                alert('Geolocation is not supported by this browser.');
+            }
+        }
+    </script>
+</body>
+</html>

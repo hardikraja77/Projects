@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='sales_styles.css') }}">
+</head>
+<body>
+    <h2>Sales Dashboard</h2>
+    <a href="{{ url_for('add_customer') }}">Add New Customer</a>
+    <br><br>
+    <a href="{{ url_for('next_customer') }}" class="btn">Next Customer</a>
+</body>
+</html>

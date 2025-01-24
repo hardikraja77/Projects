@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Salesperson Location</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .search-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        input[type="text"] {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 100%;
+            max-width: 400px;
+            box-sizing: border-box; /* Ensure padding does not affect width */
+            margin-bottom: 10px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            color: #fff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #map {
+            height: 500px;
+            width: 100%;
+            max-width: 800px;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Live Salesperson Location</h1>
+    <div class="search-container">
+        <input type="text" id="salespersonId" placeholder="Enter Salesperson ID">
+        <button onclick="searchSalesperson()">Search</button>
+    </div>
+    <div id="map"></div>
+
+    <script>
+        let map, marker;
+        let currentSalespersonId = null;
+
+        function initMap() {
+            map = L.map('map').setView([0, 0], 2); // Initial view with low zoom level
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+            }).addTo(map);
+            marker = L.marker([0, 0]).addTo(map);
+        }
+
+        function updateMap(latitude, longitude) {
+            map.setView([latitude, longitude], 15); // Higher zoom level for more detailed view
+            marker.setLatLng([latitude, longitude]);
+        }
+
+        function sendLocationToServer(latitude, longitude) {
+            if (currentSalespersonId) {
+                fetch('/update_location', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ salesperson_id: currentSalespersonId, latitude, longitude })
+                }).catch(error => {
+                    console.error('Error sending location data:', error);
+                });
+            }
+        }
+
+        function trackLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.watchPosition(position => {
+                    const { latitude, longitude } = position.coords;
+                    updateMap(latitude, longitude);
+                    sendLocationToServer(latitude, longitude);
+                }, error => {
+                    console.error('Error getting location:', error);
+                }, {
+                    enableHighAccuracy: true, // Use GPS for better accuracy
+                    maximumAge: 10000, // Reuse location data if it was collected in the last 10 seconds
+                    timeout: 5000 // Wait up to 5 seconds for a new location
+                });
+            } else {
+                alert('Geolocation is not supported by this browser.');
+            }
+        }
+
+        function searchSalesperson() {
+            const salespersonId = document.getElementById('salespersonId').value;
+            if (salespersonId) {
+                currentSalespersonId = salespersonId;
+                fetch(`/get_salesperson_location/${salespersonId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.latitude && data.longitude) {
+                            updateMap(data.latitude, data.longitude);
+                        } else {
+                            alert('Salesperson not found or no location data available.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching salesperson location:', error);
+                    });
+            } else {
+                alert('Please enter a salesperson ID.');
+            }
+        }
+
+        window.onload = () => {
+            initMap();
+            trackLocation();
+        };
+    </script>
+</body>
+</html>
