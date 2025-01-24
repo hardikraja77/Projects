@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Insert Data</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .container { max-width: 600px; margin: 0 auto; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; }
+        select, input[type="text"], input[type="number"] { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
+        .btn { padding: 10px 20px; color: #fff; background-color: #007bff; border: none; border-radius: 5px; text-decoration: none; display: inline-block; margin-top: 10px; }
+        .btn:hover { background-color: #0056b3; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Insert Data</h2>
+    <form id="insert-form" action="/insert_data" method="POST">
+        <div class="form-group">
+            <label for="database">Select Database:</label>
+            <select id="database" name="database" required>
+                <option value="">Select Database</option>
+                <!-- Options populated dynamically from server -->
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="table">Select Table:</label>
+            <select id="table" name="table" required>
+                <option value="">Select Table</option>
+                <!-- Options populated dynamically based on selected database -->
+            </select>
+        </div>
+        <div id="columns">
+            <!-- Columns with input fields will be populated dynamically based on the selected table -->
+        </div>
+        <button type="submit" class="btn">Insert Data</button>
+    </form>
+</div>
+
+<script>
+// Fetch databases and populate the database dropdown
+document.addEventListener("DOMContentLoaded", function() {
+    fetch('/get_databases')
+        .then(response => response.json())
+        .then(data => {
+            if (Array.isArray(data)) {
+                const databaseSelect = document.getElementById('database');
+                data.forEach(db => {
+                    const option = document.createElement('option');
+                    option.value = db;
+                    option.textContent = db;
+                    databaseSelect.appendChild(option);
+                });
+            } else {
+                alert('Error fetching databases: ' + (data.error || 'Unexpected response'));
+            }
+        })
+        .catch(error => alert('Failed to fetch databases: ' + error));
+});
+
+// Fetch tables based on the selected database
+document.getElementById('database').addEventListener('change', function() {
+    const database = this.value;
+    if (database) {
+        fetch(`/get_tables?database=${encodeURIComponent(database)}`)
+            .then(response => response.json())
+            .then(data => {
+                if (Array.isArray(data)) {
+                    const tableSelect = document.getElementById('table');
+                    tableSelect.innerHTML = '<option value="">Select Table</option>';
+                    data.forEach(table => {
+                        const option = document.createElement('option');
+                        option.value = table;
+                        option.textContent = table;
+                        tableSelect.appendChild(option);
+                    });
+                } else {
+                    alert('Error fetching tables: ' + (data.error || 'Unexpected response'));
+                }
+            })
+            .catch(error => alert('Failed to fetch tables: ' + error));
+    }
+});
+
+// Fetch columns based on the selected table
+document.getElementById('table').addEventListener('change', function() {
+    const database = document.getElementById('database').value;
+    const table = this.value;
+    if (database && table) {
+        fetch(`/get_columns?database=${encodeURIComponent(database)}&table=${encodeURIComponent(table)}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.columns && Array.isArray(data.columns)) {
+                    const columnsDiv = document.getElementById('columns');
+                    columnsDiv.innerHTML = '';
+                    data.columns.forEach(column => {
+                        const div = document.createElement('div');
+                        div.className = 'form-group';
+                        const label = document.createElement('label');
+                        label.textContent = column;
+                        const input = document.createElement('input');
+                        input.type = 'text';
+                        input.name = column;
+                        input.placeholder = `Enter value for ${column}`;
+                        div.appendChild(label);
+                        div.appendChild(input);
+                        columnsDiv.appendChild(div);
+                    });
+                } else {
+                    alert('Error fetching columns: ' + (data.error || 'Unexpected response'));
+                }
+            })
+            .catch(error => alert('Failed to fetch columns: ' + error));
+    }
+});
+</script>
+</body>
+</html>

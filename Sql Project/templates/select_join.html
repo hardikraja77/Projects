@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Join</title>
+    <!-- Correct way to link the CSS file in Flask -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script>
+        function fetchTables() {
+            const database = document.getElementById('database').value;
+
+            if (database) {
+                fetch('/fetch_tables', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ database: database })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    const table1Select = document.getElementById('table1');
+                    const table2Select = document.getElementById('table2');
+                    table1Select.innerHTML = '<option value="">Select a table</option>';
+                    table2Select.innerHTML = '<option value="">Select a table</option>';
+
+                    if (data.tables) {
+                        data.tables.forEach(table => {
+                            const option1 = document.createElement('option');
+                            option1.value = table;
+                            option1.text = table;
+                            table1Select.appendChild(option1);
+
+                            const option2 = document.createElement('option');
+                            option2.value = table;
+                            option2.text = table;
+                            table2Select.appendChild(option2);
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching tables:', error);
+                });
+            }
+        }
+
+        function fetchColumns(tableId, columnSelectId) {
+            const table = document.getElementById(tableId).value;
+            const database = document.getElementById('database').value;
+
+            if (table) {
+                fetch('/fetch_columns', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ table: table, database: database })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    const columnSelect = document.getElementById(columnSelectId);
+                    columnSelect.innerHTML = '<option value="">Select a column</option>';
+                    if (data.columns) {
+                        data.columns.forEach(column => {
+                            const option = document.createElement('option');
+                            option.value = column;
+                            option.text = column;
+                            columnSelect.appendChild(option);
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching columns:', error);
+                });
+            }
+        }
+    </script>
+</head>
+<body>
+
+<h1>Select Join</h1>
+
+<form method="POST">
+    <label for="database">Select Database:</label>
+    <select id="database" name="database" onchange="fetchTables()">
+        <option value="">Select a database</option>
+        {% for database in databases %}
+        <option value="{{ database }}" {% if database == selected_database %}selected{% endif %}>{{ database }}</option>
+        {% endfor %}
+    </select>
+
+    <label for="table1">Select Table 1:</label>
+    <select id="table1" name="tables[]" onchange="fetchColumns('table1', 'columns_table1')">
+        <option value="">Select a table</option>
+    </select>
+
+    <label for="columns_table1">Select Column from Table 1:</label>
+    <select id="columns_table1" name="columns_table1[]">
+        <option value="">Select a column</option>
+    </select>
+
+    <label for="table2">Select Table 2:</label>
+    <select id="table2" name="tables[]" onchange="fetchColumns('table2', 'columns_table2')">
+        <option value="">Select a table</option>
+    </select>
+
+    <label for="columns_table2">Select Column from Table 2:</label>
+    <select id="columns_table2" name="columns_table2[]">
+        <option value="">Select a column</option>
+    </select>
+
+    <label for="join_type">Select Join Type:</label>
+    <select name="join_type">
+        {% for join_type in join_types %}
+        <option value="{{ join_type }}">{{ join_type }}</option>
+        {% endfor %}
+    </select>
+
+    <button type="submit">Perform Join</button>
+</form>
+
+{% if error_message %}
+    <div class="alert alert-danger">{{ error_message }}</div>
+{% endif %}
+
+{% if result %}
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    {% for column in columns %}
+                    <th>{{ column }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in result %}
+                <tr>
+                    {% for item in row %}
+                    <td>{{ item }}</td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endif %}
+
+</body>
+</html>

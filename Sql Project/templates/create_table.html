@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create MySQL Table</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .container { max-width: 600px; margin: 0 auto; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; }
+        .form-control { width: 100%; padding: 8px; border-radius: 5px; border: 1px solid #ccc; }
+        .btn { padding: 10px 20px; color: #fff; background-color: #007bff; border: none; border-radius: 5px; cursor: pointer; }
+        .btn-secondary { background-color: #6c757d; }
+        .btn:hover { background-color: #0056b3; }
+        .btn-secondary:hover { background-color: #5a6268; }
+        .remove-column { color: #dc3545; cursor: pointer; }
+        .remove-column:hover { text-decoration: underline; }
+        .alert { padding: 10px; margin-top: 10px; border-radius: 5px; color: #fff; }
+        .alert-success { background-color: #28a745; }
+        .alert-danger { background-color: #dc3545; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Create a New MySQL Table</h2>
+    <form action="/create_table" method="POST">
+        <div class="form-group">
+            <label for="db_name">Select Database:</label>
+            <select class="form-control" id="db_name" name="db_name" required>
+                {% for database in databases %}
+                    <option value="{{ database }}">{{ database }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="table_name">Table Name:</label>
+            <input type="text" class="form-control" id="table_name" name="table_name" required>
+        </div>
+        <div id="columns-container">
+            <div class="form-group row">
+                <div class="form-group">
+                    <input type="text" class="form-control" name="column_name_1" placeholder="Column Name" required>
+                </div>
+                <div class="form-group">
+                    <select class="form-control" name="column_type_1" required>
+                        <option value="INT">INT</option>
+                        <option value="VARCHAR(255)">VARCHAR</option>
+                        <option value="TEXT">TEXT</option>
+                        <option value="DATE">DATE</option>
+                        <option value="DATETIME">DATETIME</option>
+                        <option value="FLOAT">FLOAT</option>
+                        <!-- Add other MySQL data types as needed -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <button type="button" class="remove-column">Remove</button>
+                </div>
+            </div>
+        </div>
+        <button type="button" id="add-column" class="btn btn-secondary">Add Column</button>
+        <br><br>
+        <button type="submit" class="btn">Create Table</button>
+    </form>
+    <br>
+    <!-- Flash messages -->
+    <div id="messages">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            <ul class="list-unstyled">
+            {% for category, message in messages %}
+              <li class="alert alert-{{ category }}">{{ message }}</li>
+            {% endfor %}
+            </ul>
+          {% endif %}
+        {% endwith %}
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        let columnCount = 1;
+
+        document.getElementById('add-column').addEventListener('click', function() {
+            columnCount++;
+            const columnsContainer = document.getElementById('columns-container');
+            const columnDiv = document.createElement('div');
+            columnDiv.classList.add('form-group', 'row');
+            columnDiv.innerHTML = `
+                <div class="form-group">
+                    <input type="text" class="form-control" name="column_name_${columnCount}" placeholder="Column Name" required>
+                </div>
+                <div class="form-group">
+                    <select class="form-control" name="column_type_${columnCount}" required>
+                        <option value="INT">INT</option>
+                        <option value="VARCHAR(255)">VARCHAR</option>
+                        <option value="TEXT">TEXT</option>
+                        <option value="DATE">DATE</option>
+                        <option value="DATETIME">DATETIME</option>
+                        <option value="FLOAT">FLOAT</option>
+                        <!-- Add other MySQL data types as needed -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <button type="button" class="remove-column">Remove</button>
+                </div>
+            `;
+            columnsContainer.appendChild(columnDiv);
+        });
+
+        document.getElementById('columns-container').addEventListener('click', function(e) {
+            if (e.target && e.target.classList.contains('remove-column')) {
+                e.target.parentElement.parentElement.remove();
+            }
+        });
+    });
+
+ // Hide flash messages after 10 seconds
+    setTimeout(() => {
+        const messages = document.querySelectorAll('#messages .alert');
+        messages.forEach(message => {
+            message.style.transition = 'opacity 1s ease-out';
+            message.style.opacity = '0';
+            setTimeout(() => message.remove(), 1000); // Remove element after fade-out
+        });
+    }, 5000);
+</script>
+</body>
+</html>

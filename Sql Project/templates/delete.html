@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delete</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .container { max-width: 600px; margin: 0 auto; }
+        select, button { padding: 10px; font-size: 16px; }
+        .form-group { margin-bottom: 15px; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Delete Option</h2>
+    <form action="/perform_delete" method="POST">
+        <div class="form-group">
+            <label for="delete_type">Choose what to delete:</label>
+            <select id="delete_type" name="delete_type" required>
+                <option value="">Select</option>
+                <option value="database">Database</option>
+                <option value="table">Table</option>
+            </select>
+        </div>
+        <div class="form-group" id="database-container" style="display: none;">
+            <label for="database_name">Select Database:</label>
+            <select id="database_name" name="database_name">
+                <!-- Databases will be dynamically populated here -->
+            </select>
+        </div>
+        <div class="form-group" id="table-container" style="display: none;">
+            <label for="table_name">Select Table:</label>
+            <select id="table_name" name="table_name">
+                <!-- Tables will be dynamically populated here -->
+            </select>
+        </div>
+        <button type="submit">Delete</button>
+    </form>
+</div>
+
+<script>
+    document.getElementById('delete_type').addEventListener('change', function() {
+        const type = this.value;
+        const databaseContainer = document.getElementById('database-container');
+        const tableContainer = document.getElementById('table-container');
+        
+        if (type === 'database') {
+            databaseContainer.style.display = 'none';
+            tableContainer.style.display = 'none';
+        } else if (type === 'table') {
+            databaseContainer.style.display = 'block';
+            tableContainer.style.display = 'none';
+            
+            fetch('/get_databases')
+                .then(response => response.json())
+                .then(data => {
+                    const select = document.getElementById('database_name');
+                    select.innerHTML = '<option value="">Select Database</option>';
+                    data.forEach(db => {
+                        const option = document.createElement('option');
+                        option.value = db;
+                        option.textContent = db;
+                        select.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('Error:', error));
+        }
+    });
+
+    document.getElementById('database_name').addEventListener('change', function() {
+        const database = this.value;
+        const tableContainer = document.getElementById('table-container');
+        
+        if (database) {
+            tableContainer.style.display = 'block';
+            
+            fetch(`/get_tables?database=${database}`)
+                .then(response => response.json())
+                .then(data => {
+                    const select = document.getElementById('table_name');
+                    select.innerHTML = '<option value="">Select Table</option>';
+                    data.forEach(table => {
+                        const option = document.createElement('option');
+                        option.value = table;
+                        option.textContent = table;
+                        select.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('Error:', error));
+        } else {
+            tableContainer.style.display = 'none';
+        }
+    });
+
+ // Hide flash messages after 10 seconds
+    setTimeout(() => {
+        const messages = document.querySelectorAll('#messages .alert');
+        messages.forEach(message => {
+            message.style.transition = 'opacity 1s ease-out';
+            message.style.opacity = '0';
+            setTimeout(() => message.remove(), 1000); // Remove element after fade-out
+        });
+    }, 5000);
+</script>
+</body>
+</html>

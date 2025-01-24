@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            margin-bottom: 20px;
+            color: #007bff;
+        }
+        .btn {
+            padding: 12px 20px;
+            color: #fff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            display: block;
+            text-align: center;
+            margin-bottom: 10px;
+            transition: background-color 0.3s ease;
+        }
+        .btn-secondary {
+            background-color: #6c757d;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+        .alert {
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 5px;
+            color: #fff;
+            opacity: 1;
+            transition: opacity 1s ease-out;
+        }
+        .alert-success {
+            background-color: #28a745;
+        }
+        .alert-danger {
+            background-color: #dc3545;
+        }
+        .list-unstyled {
+            padding: 0;
+            list-style: none;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Welcome</h2>
+    <a href="/go_to_create_database" class="btn">Create Database</a>
+    <a href="/go_to_create_table" class="btn btn-secondary">Create Table</a>
+    <a href="/go_to_delete" class="btn">Delete</a>
+    <a href="/go_to_insert" class="btn">Insert</a>
+    <a href="/go_to_joins" class="btn btn-secondary">Joins</a> <!-- Joins Button -->
+    <br><br>
+    <!-- Flash messages -->
+    <div id="messages">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            <ul class="list-unstyled">
+            {% for category, message in messages %}
+              <li class="alert alert-{{ category }}">{{ message }}</li>
+            {% endfor %}
+            </ul>
+          {% endif %}
+        {% endwith %}
+    </div>
+</div>
+
+<script>
+    // Hide flash messages after 5 seconds with a smooth fade-out effect
+    setTimeout(() => {
+        const messages = document.querySelectorAll('#messages .alert');
+        messages.forEach(message => {
+            message.style.opacity = '0'; // Start fade-out
+            setTimeout(() => message.remove(), 1000); // Remove after fade-out
+        });
+    }, 5000);
+</script>
+</body>
+</html>
