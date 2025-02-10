@@ -1,0 +1,49 @@
+.tot{
+    height:300px;
+    width:500px;
+    display: inline-block;
+    justify-content: center;
+    background-color: #035353;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.inp1{
+    display: inline-block;
+    text-align: center;
+    justify-content: center;
+    padding: 10px;
+
+}
+
+.inp1 label,input{
+    display: block;
+    justify-content: center;
+}
+
+.inp1 input{
+    margin-top: 20px;
+    height:30px;
+    width:250px;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    border-radius: 10px;
+    border: none;
+    outline: none;
+}
+
+.inp1 button{
+    margin-top: 15px;
+    width:200px;
+    height:30px;
+    border-radius: 10px;
+    background-color: green;
+    color: whitesmoke;
+    border: none;
+    cursor: pointer;
+}
+
+.tot h1,.inp1 label{
+    color: aliceblue;
+}

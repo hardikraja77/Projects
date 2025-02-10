@@ -1,0 +1,47 @@
+.outdiv{
+    background-color: blue;
+    width:300px;
+    height:300px;
+    align-items: center;
+    justify-content: center;
+    margin: 100px 0 0 300px;
+    padding: 30px;
+    border-radius: 20px;
+}
+
+.msg h1,.cont h3{
+    color: aliceblue;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+}
+
+.sel{
+    justify-content: center;
+    display: flex;
+    align-items: center;
+    padding: 5px;
+    margin-left: 70px;
+    border-radius: 7px;
+    text-align: center;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    
+}
+
+.delbtn{
+    justify-content: center;
+    display: flex;
+    align-items: center;
+    padding: 20px;
+    
+}
+
+.delbtn button{
+    width:170px;
+    height:35px;
+    border-radius: 10px;
+    border: none;
+    background-color: hotpink;
+    color: aliceblue;
+    cursor: pointer;
+}

@@ -1,0 +1,82 @@
+body{
+   
+    height:100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.out4{
+    
+    min-height: 300px;
+    width:400px;
+    background-color: cornflowerblue;
+    border-radius: 20px;
+    padding: 10px;  
+}
+
+.out4 h3{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: whitesmoke;
+}
+
+.out4 select{
+    margin-left: 100px;
+    width:200px;
+    height:30px;
+    border-radius: 10px;
+    align-items: center;
+    justify-content: center;
+    align-content: center;
+    margin-top: 10px;
+    cursor: pointer;
+}
+
+.joinbtn{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.joinbtn button{
+    background-color: green;
+    margin-top: 15px;
+    width: 180px;
+    height:30px;
+    border: none;
+    border-radius: 15px;
+    color: azure;
+    cursor: pointer;
+}
+.tab{
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    height: 25vh;
+
+}
+
+.tab1{
+    width:80%;
+    border-collapse: collapse;
+    border-radius: 5px;
+    overflow: hidden;
+    background: white;
+}
+
+
+
+.tab1 td,th{
+    background-color: steelblue;
+    border: 1px solid black;
+    padding: 5px;
+    color: aliceblue;
+    align-items: center;
+    justify-content: center;
+}
+
+.tab1 th{
+    background-color: gainsboro;
+    color: blue;
+}
